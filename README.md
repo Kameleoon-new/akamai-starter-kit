@@ -27,7 +27,22 @@ First, you'll set up an Akamai EdgeWorker. For this step, please follow the guid
 
 4. Install the [EdgeWorkers CLI](https://techdocs.akamai.com/edgeworkers/docs/akamai-cli#edgeworkers-cli).
 
-5. Setup [Authentication credentials](https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials).
+5. Setup [Authentication credentials](https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials). Two different sets of permissions are involved:
+
+   - **Setup credentials (steps 6–7, CLI/API)**: generating access tokens, initializing EdgeKV and creating namespaces require the `EdgeKV Admin` role (or a custom role with `EdgeKV Access Token - Create`, `EdgeKV Namespace - Create` and the related permissions). Akamai recommends creating these credentials with the Admin role.
+   - **Kameleoon integration credentials (used in the Kameleoon App)**: the App only lists your EdgeKV namespaces and writes the project configuration into the selected namespace, so a restricted API client is enough:
+     - **API service**: `EdgeKV` with access level `READ-WRITE` (Control Center → Identity & Access → Users and API Clients → Edit API client → APIs).
+     - **Role**: the predefined `EdgeKV Publisher` role, or a custom role including:
+       - `EdgeKV Namespace - View` — list namespaces
+       - `EdgeKV Data - Read` — read items
+       - `EdgeKV Data - Write` — write items
+       - `CP Code - View CP Code Information` — required by Akamai for custom EdgeKV roles; without it the API may return a generic `500 Server Error`
+     - **Access group**: the API client must belong to the access group that owns the namespace (or the namespace must be created with `groupId=0`).
+
+   > Note:
+   > `Staging only` variants of the permissions work only with the Staging network. Without the matching permission for the selected network, Akamai returns `410` on Staging and `401` on Production.
+
+   See [Manage access to EdgeKV](https://techdocs.akamai.com/edgekv/docs/manage-access-to-edgekv) for details.
 
 6. Generate [EdgeKv access tooken](https://techdocs.akamai.com/edgekv/docs/generate-and-retrieve-edgekv-access-tokens).
 
