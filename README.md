@@ -36,7 +36,6 @@ First, you'll set up an Akamai EdgeWorker. For this step, please follow the guid
        - `EdgeKV Namespace - View` — list namespaces
        - `EdgeKV Data - Read` — read items
        - `EdgeKV Data - Write` — write items
-       - `CP Code - View CP Code Information` — required by Akamai for custom EdgeKV roles; without it the API may return a generic `500 Server Error`
      - **Access group**: the API client must belong to the access group that owns the namespace (or the namespace must be created with `groupId=0`).
 
    > Note:
@@ -70,9 +69,12 @@ npm i
 
 3. Add your Kameleoon `SITE_CODE`, `CLIENT_ID` and `CLIENT_SECRET` in `src/constants.ts`. They can be found in the Kameleoon application.
 
-. Add yor Akamai `namespace` which was selected while akamai configuration on the Kameleoon App.
+4. Add your Akamai `NAMESPACE` in `src/constants.ts`, the one selected during the Akamai configuration in the Kameleoon App.
 
-4. Add your edgeKv access-token in `src/lib/edgekv_tokens.js`.
+   > Note:
+   > Kameleoon writes two items into the namespace: `{SITE_CODE}` (legacy format for outdated SDK versions, may be removed in the future) and `{SITE_CODE}_V3` (current format). The starter kit derives the version from the configuration URL the SDK requests (`https://sdk-config.kameleoon.eu/v3/...`), so the item always matches the format the installed SDK expects. If Kameleoon releases a new breaking configuration format (e.g. `{SITE_CODE}_V4`), upgrading `@kameleoon/nodejs-sdk` to a version that supports it is enough.
+
+5. Add your edgeKv access-token in `src/lib/edgekv_tokens.js`.
 
 ```
 // example of edgekv_tokens.js
@@ -94,19 +96,19 @@ export { edgekv_access_tokens };
 > Note:
 > Access tokens can be created for multiple namespaces. Each namespace should have its own object with an associated access token. Prefix the token object key with `namespace-` followed by the specific namespace. The full object key should be formatted as `namespace-${namespace}`
 
-5. Build the bundle.
+6. Build the bundle.
 
 ```
 npm run build
 ```
 
-6. Upload the bundle
+7. Upload the bundle
 
 ```
 npm run deploy -- {WORKER_ID}
 ```
 
-7. Activate the version
+8. Activate the version
 
 ```
 akamai edgeworkers activate {WORKER_ID} {ENVIRONMENT} {EDGEWORKER_VERSION}
@@ -116,7 +118,7 @@ akamai edgeworkers activate {WORKER_ID} {ENVIRONMENT} {EDGEWORKER_VERSION}
 - `ENVIRONMENT`: The environment the EdgeWorker is being deployed on.
 - `EDGEWORKER_VERSION`: The custom version of the EdgeWorker as mentioned in `bundle.json`. This should be updated on every new deployment.
 
-8. Enable [Advanced debug headers](https://techdocs.akamai.com/edgeworkers/docs/enable-enhanced-debug-headers) to receive debug logs in the response headers.
+9. Enable [Advanced debug headers](https://techdocs.akamai.com/edgeworkers/docs/enable-enhanced-debug-headers) to receive debug logs in the response headers.
 
 ## Additional Resources and Concepts
 

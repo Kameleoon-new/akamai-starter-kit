@@ -1,3 +1,4 @@
+import "./globals";
 import { Compatibility, KameleoonClient } from "@kameleoon/nodejs-sdk";
 import { SITE_CODE, CLIENT_ID, CLIENT_SECRET } from "./constants";
 import { AkamaiWorkerRequester } from "./requester";
@@ -36,8 +37,12 @@ export async function onClientResponse(
       });
     }
 
-    if (!client.isInitialized()) {
+    if (!client.isReady()) {
       await client.initialize();
+    } else {
+      // -- Timers are stubbed in EdgeWorkers, so the SDK can't refresh the
+      //    configuration in the background; re-read EdgeKV once it's stale
+      await client.refreshDataFileIfStale();
     }
 
     const visitorCode = client.getVisitorCode({
@@ -54,7 +59,7 @@ export async function onClientResponse(
 
     // -- Get the value of the variable from the found feature flag
     const current_string_variable =
-      variation.variables.get("YOUR_VARIABLE_NAME");
+      variation.variables.get("YOUR_VARIABLE_NAME")?.value;
 
     response.setHeader("X-visitor-code", visitorCode);
     response.setHeader("X-custom-variable", String(current_string_variable));

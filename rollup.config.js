@@ -27,6 +27,7 @@ export default {
   external: [
     "http-request",
     "cookies",
+    "encoding",
     "log",
     "streams",
     "text-encode-transform",

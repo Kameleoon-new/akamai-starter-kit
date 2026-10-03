@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 
-// TODO: Describe polyfills here if available in the EdgeWorkers scope.
-// This will allow Kameleoon SDK to update client configuration at regular intervals.
+// EdgeWorkers has no timer APIs, but the SDK calls them during initialization
+// (configuration refresh, data cleanup, request retries). These no-op stubs keep
+// it from throwing; since they never fire, main.ts refreshes the configuration
+// explicitly via refreshDataFileIfStale().
 
 function setTimeout() {
   return 100;

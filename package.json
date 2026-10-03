@@ -37,6 +37,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@kameleoon/nodejs-sdk": "5.1.0"
+    "@kameleoon/nodejs-sdk": "5.28.0"
   }
 }
